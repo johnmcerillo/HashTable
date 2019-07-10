@@ -5,9 +5,14 @@ namespace HashTable
     {
 
         private Entry[] m_Table = new Entry[8];
+        private int m_OccupiedCount;
 
         public void Add(TKey key, TValue value)
         {
+            if(0.87 < (m_OccupiedCount / (double)m_Table.Length))
+            {
+                Expand();
+            }
             var tableLen = m_Table.Length;
             var indexGuess = GuessIndex(key, tableLen);
             for (var i = 0; i < tableLen; i++)
@@ -25,6 +30,7 @@ namespace HashTable
                 m_Table[index].Hash = indexGuess;
                 m_Table[index].Key = key;
                 m_Table[index].Value = value;
+                m_OccupiedCount++;
                 return;
             }
 
@@ -44,11 +50,28 @@ namespace HashTable
         {
             var indexKey = FindKeyIndex(key, false);
             ShiftBackEntries(indexKey);
+            m_OccupiedCount--;
         }
 
         private int GuessIndex(TKey key, int tableLen)
         {
             return Math.Abs(key.GetHashCode()) % tableLen;
+        }
+
+        private void Expand()
+        {
+            var tableOld = m_Table;
+            var tableLenOld = m_Table.Length;
+            m_OccupiedCount = 0;
+            m_Table = new Entry[tableLenOld * 2];
+            for (var i = 0; i < tableLenOld; i++)
+            {
+                if (!tableOld[i].Occupied)
+                {
+                    continue;
+                }
+                Add(tableOld[i].Key, tableOld[i].Value);
+            }
         }
 
         private int FindKeyIndex(TKey key, bool safe)

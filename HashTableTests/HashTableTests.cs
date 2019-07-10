@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using HashTable;
 using Xunit;
 
@@ -6,6 +7,7 @@ namespace HashTableTests
 {
     public class HashTableTests
     {
+        
         [Fact]
         public void Test1()
         {
@@ -111,6 +113,66 @@ namespace HashTableTests
                 {
                     return key;
                 }
+            }
+        }
+
+        [Fact]
+        public void Test4()
+        {
+            var hs = new HashSet<int>();
+            var ht = new HashTable<int, int>();
+            var rand = new Random(7);
+
+            FillTo717(rand, hs, ht);
+
+            for(var unused = 0; unused < 10000; unused++)
+            {
+                DrainEvery5thEntry(hs, ht);
+                FillTo717(rand, hs, ht);
+            }
+        }
+
+        private int FullSpectrumRand(Random rand)
+        {
+            return rand.Next() % 2 == 0 ? rand.Next() : -rand.Next();
+        }
+
+        private void FillTo717(Random rand, HashSet<int> hs, HashTable<int, int> ht)
+        {
+            while (hs.Count < 717)
+            {
+                int next;
+                if (!hs.Contains(next = FullSpectrumRand(rand)))
+                {
+                    hs.Add(next);
+                    ht.Add(next, -next);
+                }
+            }
+            TestAllValues(hs, ht);
+        }
+
+        private void DrainEvery5thEntry(HashSet<int> hs, HashTable<int, int> ht)
+        {
+            var i = 0;
+            var hsArr = new int[hs.Count];
+            hs.CopyTo(hsArr);
+            foreach (var entry in hsArr)
+            {
+                if (i % 5 == 0)
+                {
+                    hs.Remove(entry);
+                    ht.Remove(entry);
+                    Assert.True(!ht.ContainsKey(entry));
+                }
+                i++;
+            }
+        }
+
+        private void TestAllValues(HashSet<int> hs, HashTable<int, int> ht)
+        {
+            foreach (var entry in hs)
+            {
+                Assert.True(ht.GetValue(entry) == -entry);
             }
         }
     }
