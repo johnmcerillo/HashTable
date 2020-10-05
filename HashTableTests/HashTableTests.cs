@@ -7,7 +7,10 @@ namespace HashTableTests
 {
     public class HashTableTests
     {
-        
+
+        /// <summary>
+        /// Test collisions without expanding the circular array.
+        /// </summary>
         [Fact]
         public void Test1()
         {
@@ -33,7 +36,9 @@ namespace HashTableTests
             Assert.False(noExcept || ht.ContainsKey(12) || ht.GetValue(0) != 0 || ht.GetValue(13) != -13 || ht.GetValue(14) != -14
                 || ht.GetValue(20) != -20 || ht.GetValue(6) != -6 || ht.GetValue(4) != -4);
         }
-
+        /// <summary>
+        /// Test more collisions without expanding the circular array.
+        /// </summary>
         [Fact]
         public void Test2()
         {
@@ -59,6 +64,9 @@ namespace HashTableTests
                 || ht.GetValue(6) != -6 || ht.GetValue(4) != -4);
         }
 
+        /// <summary>
+        /// Randomized test on the circular array without expansion.
+        /// </summary>
         [Fact]
         public void Test3()
         {
@@ -116,6 +124,11 @@ namespace HashTableTests
             }
         }
 
+        /// <summary>
+        /// Randomized test that expands the circular array. Repeatedly adds a
+        /// batches of 717 new entries and removes every fifth entry. Uses a
+        /// C# built in hash set for reference.
+        /// </summary>
         [Fact]
         public void Test4()
         {
@@ -163,6 +176,7 @@ namespace HashTableTests
                     hs.Remove(entry);
                     ht.Remove(entry);
                     Assert.True(!ht.ContainsKey(entry));
+                    Assert.True(hs.Count == ht.Count);
                 }
                 i++;
             }
@@ -174,6 +188,7 @@ namespace HashTableTests
             {
                 Assert.True(ht.GetValue(entry) == -entry);
             }
+            Assert.True(hs.Count == ht.Count);
         }
     }
 }
