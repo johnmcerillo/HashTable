@@ -2,7 +2,7 @@
 namespace HashTable
 {
     /// <summary>
-    /// Hash table implemented using a circular array with chaining
+    /// Hash table implemented using a circular array with linear probing
     /// to resolve collisions.
     /// </summary>
     /// <typeparam name="TKey">The key type.</typeparam>

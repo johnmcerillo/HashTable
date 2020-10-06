@@ -9,7 +9,14 @@ namespace HashTableTests
     {
 
         /// <summary>
-        /// Test collisions without expanding the circular array.
+        /// Test collisions without expanding the circular array. Additions wrap
+        /// collisions around to the beginning of the array which must be shifted
+        /// back during the removal.
+        /// Prior to removing 12:
+        /// 14,13, 0, -, 4,12, 6,20
+        /// After:
+        /// 13, 0, -, -, 4,20, 6,14
+        /// This test yields total code coverage of the ShiftBackEntries() method.
         /// </summary>
         [Fact]
         public void Test1()
@@ -36,8 +43,15 @@ namespace HashTableTests
             Assert.False(noExcept || ht.ContainsKey(12) || ht.GetValue(0) != 0 || ht.GetValue(13) != -13 || ht.GetValue(14) != -14
                 || ht.GetValue(20) != -20 || ht.GetValue(6) != -6 || ht.GetValue(4) != -4);
         }
+
         /// <summary>
-        /// Test more collisions without expanding the circular array.
+        /// Test more collisions without expanding the circular array. Additions
+        /// wrap collisions around to the beginning of the array. But this time,
+        /// the collided entries are not shifted back.
+        /// Prior to removing 12:
+        ///  0, 8, -, -, 4,12, 6,20
+        /// After:
+        ///  0, 8, -, -, 4,20, 6, -
         /// </summary>
         [Fact]
         public void Test2()
@@ -65,7 +79,8 @@ namespace HashTableTests
         }
 
         /// <summary>
-        /// Randomized test on the circular array without expansion.
+        /// Randomized test on the circular array without expansion. Performs
+        /// thousands of adds and removes using a reference array of unique keys.
         /// </summary>
         [Fact]
         public void Test3()
